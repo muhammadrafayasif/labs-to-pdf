@@ -1,6 +1,6 @@
 # 📄 C++ to PDF Converter
 
-A simple Python tool that **automatically collects all C++ source files** in a directory, merges them into a **single, well-formatted PDF**, and optionally includes **compilation output** — perfect for **assignment submissions** or **documentation**.
+A simple Python tool that **automatically collects all C++ source files** in a directory, merges them into a **single, well-formatted PDF**,perfect for **assignment submissions** or **documentation**.
 
 ---
 
