@@ -1,19 +1,3 @@
-EXTENSION = "cpp"
-LOGO_PATH = "./logo.png" # University Logo to be added to the title page
-PROCESS = ["Lab 1"] # Add folder names (LABS) to be processed
-COMPILE_TEMPLATE = ["g++", "{0}", "-o", "{1}"] # Compilation code to run task
-
-# FORMAT = [ [FIRST LAB INPUTS], [SECOND LAB INPUTS], ... ]
-INPUTS = [ 
-    ["2 2\n1 3 2 4\n", "2 3\n3.2 3.7 4\n2.3 4 3.2\n", "1\n5\n1\n2\n1\n5\n2\n3\n", "5\n2 13 16 23 35\n16\n", "2 2\n2 5 10 15\n5\n"] 
-] # User input for each lab task
-
-UNIVERSITY="NED University of Engineering and Technology"
-NAME = "NAME"
-ROLL_NO = "CT-24000"
-DEPARTMENT = "Department of Computer Science and Information Technology"
-DEGREE = "Bachelor of Science (BS)"
-
 import subprocess
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import (
@@ -25,6 +9,31 @@ from reportlab.lib import colors
 from datetime import datetime
 from pathlib import Path
 
+# ---------- CONFIGURATION ----------
+EXTENSION = "cpp"
+LOGO_PATH = "./logo.png"
+PROCESS = ["Lab 1"]
+COMPILE_TEMPLATE = ["g++", "{0}", "-o", "{1}"]
+INPUTS = [
+    ["2 2\n1 3 2 4\n", "2 3\n3.2 3.7 4\n2.3 4 3.2\n", "1\n5\n1\n2\n1\n5\n2\n3\n", "5\n2 13 16 23 35\n16\n", "2 2\n2 5 10 15\n5\n"]
+]
+
+UNIVERSITY = "NED University of Engineering and Technology"
+NAME = "Muhammad Raza"
+ROLL_NO = "CT-24138"
+DEPARTMENT = "Department of Computer Science and Information Technology"
+DEGREE = "Bachelor of Science (BS)"
+
+# ---------- STYLES ----------
+styles = getSampleStyleSheet()
+title_style = ParagraphStyle("CustomTitle", parent=styles["Title"], fontSize=28, alignment=1, spaceAfter=20)
+subtitle_style = ParagraphStyle("Subtitle", parent=styles["Normal"], fontSize=16, alignment=1, textColor=colors.HexColor("#333333"), spaceAfter=10)
+info_style = ParagraphStyle("Info", parent=styles["Normal"], alignment=1, fontSize=12, textColor=colors.HexColor("#555555"))
+code_style = ParagraphStyle("CodeStyle", fontName="Courier", fontSize=9, leading=12, backColor=colors.whitesmoke, borderPadding=(5, 5, 5, 5), borderColor=colors.lightgrey, borderWidth=0.5)
+terminal_style = ParagraphStyle("TerminalStyle", fontName="Courier", fontSize=9, leading=12, backColor=colors.black, textColor=colors.white, borderPadding=(5, 5, 5, 5), borderColor=colors.lightgrey, borderWidth=0.5)
+heading_style = styles["Heading2"]
+
+# ---------- HELPERS ----------
 def terminal_block(text):
     pre = Preformatted(text, terminal_style)
     table = Table([[pre]])
@@ -36,107 +45,65 @@ def terminal_block(text):
     ]))
     return table
 
-styles = getSampleStyleSheet()
+def compile_and_run(file_path, input_data):
+    COMPILE_CODE = [s.format(file_path, file_path.with_suffix("")) for s in COMPILE_TEMPLATE]
+    try:
+        start_time = datetime.now()
+        subprocess.run(COMPILE_CODE, check=True)
+        result = subprocess.run([file_path.with_suffix("")], input=input_data, capture_output=True, text=True)
+        end_time = datetime.now()
 
-title_style = ParagraphStyle(
-    "CustomTitle",
-    parent=styles["Title"],
-    fontSize=28,
-    alignment=1,  # center
-    spaceAfter=20,
-)
+        output = result.stdout.replace(": ", ":\n").strip()
+        output += f"\n\n[INPUT(S) PROVIDED]\n{input_data}"
+        output += f"\n[Execution Time: {(end_time - start_time).total_seconds():.2f}s]"
+        return output, None
+    except subprocess.CalledProcessError as e:
+        return None, f"❌ Compilation or execution failed:\n{e.stderr or str(e)}"
 
-subtitle_style = ParagraphStyle(
-    "Subtitle",
-    parent=styles["Normal"],
-    fontSize=16,
-    alignment=1,
-    textColor=colors.HexColor("#333333"),
-    spaceAfter=10,
-)
+def build_title_page():
+    return [
+        Spacer(1, 2 * inch),
+        Image(LOGO_PATH, width=2.5 * inch, height=2.5 * inch),
+        Spacer(1, 0.5 * inch),
+        Paragraph(UNIVERSITY, title_style),
+        Paragraph(f"Data Structures and Algorithms", subtitle_style),
+        Spacer(1, 0.5 * inch),
+        Paragraph(f"Author: {NAME}", info_style),
+        Paragraph(f"Roll No: {ROLL_NO}", info_style),
+        Paragraph(f"Date: {datetime.now().strftime('%B %d, %Y')}", info_style),
+        Spacer(1, 1.9 * inch),
+        Paragraph(f"{DEPARTMENT}<br/>{DEGREE}", info_style),
+        PageBreak()
+    ]
 
-info_style = ParagraphStyle(
-    "Info",
-    parent=styles["Normal"],
-    alignment=1,
-    fontSize=12,
-    textColor=colors.HexColor("#555555"),
-)
+def build_question_block(n, file_path, input_data):
+    block = [Paragraph(f"Question {n+1}", heading_style)]
+    with open(file_path, 'r') as f:
+        block.append(Preformatted(f.read(), code_style))
 
-code_style = ParagraphStyle(
-    "CodeStyle",
-    fontName="Courier",
-    fontSize=9,
-    leading=12,
-    backColor=colors.whitesmoke,
-    borderPadding=(5, 5, 5, 5),
-    borderColor=colors.lightgrey,
-    borderWidth=0.5,
-)
+    if input_data:
+        output, error = compile_and_run(file_path, input_data)
+        if output:
+            block.append(Paragraph("Output", heading_style))
+            block.append(terminal_block(output))
+        else:
+            block.append(Paragraph("Error", heading_style))
+            block.append(terminal_block(error))
+    block.append(Spacer(1, 0.5 * inch))
+    return block
 
-terminal_style = ParagraphStyle(
-    "TerminalStyle",
-    fontName="Courier",
-    fontSize=9,
-    leading=12,
-    backColor=colors.black,
-    textColor=colors.white,
-    borderPadding=(5, 5, 5, 5),
-    borderColor=colors.lightgrey,
-    borderWidth=0.5,
-)
+# ---------- MAIN ----------
+for lab_index, lab_name in enumerate(PROCESS):
+    lab_path = Path(f"./{lab_name}")
+    lab_path.mkdir(parents=True, exist_ok=True)
+    pdf_path = lab_path / f"{ROLL_NO}_{lab_name}.pdf"
+    doc = SimpleDocTemplate(str(pdf_path), pagesize=A4)
+    content = build_title_page()
 
-heading_style = styles["Heading2"]
-body_style = styles["BodyText"]
+    files = lab_path.glob(f"*.{EXTENSION}")
+    for q_index, file_path in enumerate(files):
+        input_data = INPUTS[lab_index][q_index] if lab_index < len(INPUTS) else ""
+        content.extend(build_question_block(q_index, file_path, input_data))
 
-for LAB_NUMBER, _ in enumerate(PROCESS):
-    pdf_path = f"./{_}/{ROLL_NO}.pdf"
-    doc = SimpleDocTemplate(pdf_path, pagesize=A4)
-
-    lab = []
-
-    # ---------- TITLE PAGE ----------
-    lab.append(Spacer(1, 2 * inch))
-
-    # University Logo (centered)
-    lab.append(Image(LOGO_PATH, width=2.5 * inch, height=2.5 * inch))
-    lab.append(Spacer(1, 0.5 * inch))
-
-    # Title and Subtitle
-    lab.append(Paragraph(UNIVERSITY, title_style))
-    lab.append(Paragraph(f"Data Structures and Algorithms - {_}", subtitle_style))
-    lab.append(Spacer(1, 0.5 * inch))
-
-    # Author and Date
-    lab.append(Paragraph(f"Author: {NAME}", info_style))
-    lab.append(Paragraph(f"Roll No: {ROLL_NO}", info_style))
-    lab.append(Paragraph(f"Date: {datetime.now().strftime('%B %d, %Y')}", info_style))
-    lab.append(Spacer(1, 1.9 * inch))
-
-    # Footer note or department info
-    lab.append(Paragraph(
-        f"{DEPARTMENT}<br/>{DEGREE}",
-        info_style
-    ))
-    lab.append(PageBreak())
-
-    files = Path(f'./{_}').glob(f'*.{EXTENSION}')
-    for n, i in enumerate(files):
-        INPUT = INPUTS[LAB_NUMBER][n]
-        if INPUT:
-            COMPILE_CODE = [s.format(i, i.with_suffix("")) for s in COMPILE_TEMPLATE]
-            subprocess.run(COMPILE_CODE, check=True)
-            RESULT = subprocess.run([i.with_suffix("")], input=INPUT, capture_output=True, text=True)
-            OUTPUT = RESULT.stdout.replace(": ", ":\n").strip()
-            OUTPUT += "\n\n[INPUT(S) PROVIDED]\n" + INPUT
-        with open(f'./{i}', 'r') as f:
-            lab.append(Paragraph(f"Question {n+1}", heading_style))
-            lab.append(Preformatted(f.read(), code_style))
-            if INPUT:
-                lab.append(Paragraph(f"Output", heading_style))
-                lab.append(terminal_block(OUTPUT))
-            lab.append(Spacer(1, 0.5 * inch))
-
-    doc.build(lab)
-
-    print(f"✅ PDF of {_} created successfully: {pdf_path}")
+    doc.build(content)
+    print(f"✅ PDF of {lab_name} created successfully: {pdf_path}")
