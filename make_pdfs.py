@@ -14,6 +14,12 @@ ROLL_NO = "CT-24000"
 DEPARTMENT = "Department of Computer Science and Information Technology"
 DEGREE = "Bachelor of Science (BS)"
 
+#################################################################################################################################
+#
+#           END OF CONFIGURATION
+#
+#################################################################################################################################
+
 import subprocess
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import (
