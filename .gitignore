@@ -3,6 +3,7 @@ venv/
 
 # Ignore compiled C++ binaries
 *.exe
+.vscode/
 
 # Ignore generated PDFs
 *.pdf
