@@ -1,7 +1,7 @@
 # 🧾 Automated Lab Report Generator (Python + ReportLab)
 
-This project automatically compiles, runs, and generates PDF lab reports for programming labs.
-It handles everything — from compiling C++ files and injecting test inputs to capturing output and formatting it into a professional, university-style PDF with your name, roll number, and department.
+This project automatically compiles, runs, and generates PDF lab reports for programming labs.  
+It handles everything — from compiling C++ files to capturing output and formatting it into a professional, university-style PDF with your name, roll number, and department.
 
 ---
 
@@ -12,18 +12,16 @@ The generated PDF includes:
 - University logo and title page
 - Each lab question’s source code
 - Automatically captured program output (styled like a terminal)
-- Inputs used for testing
 - Execution time for each task
 - Automatic date and metadata
 
-Example PDF: [CT-24000.pdf](https://github.com/muhammadrafayasif/labs-to-pdf/blob/main/Lab%201/CT-24000.pdf)
+Example PDF: [CT-24000.pdf](https://github.com/razajavaid2004/labs-to-pdf/blob/main/Lab%201/CT-24000.pdf)
 
 ---
 
 ## ⚙️ Features
 
 - ✅ Automatic Compilation — Uses `g++` to compile each `.cpp` file
-- 🧪 Input Injection — Feeds predefined test input to each program
 - 📤 Output Capture — Captures console output and formats it like a terminal
 - 🖋️ Beautiful PDF Generation — Uses ReportLab for clean, styled reports
 - 🧑‍🎓 Customizable Branding — Add your own logo, name, roll number, department, and degree
@@ -39,8 +37,8 @@ Example PDF: [CT-24000.pdf](https://github.com/muhammadrafayasif/labs-to-pdf/blo
 📦 labs-to-pdf/
 │
 ├── Lab 1/
-│   ├── q1.cpp
-│   ├── q2.cpp
+│   ├── 1.cpp
+│   ├── 2.cpp
 │   └── ...
 │
 ├── logo.png                # University logo for the title page
@@ -74,11 +72,7 @@ pip install reportlab
 ```python
 EXTENSION = "cpp"
 LOGO_PATH = "./logo.png"
-PROCESS = ["Lab 8"]
-COMPILE_TEMPLATE = ["g++", "{0}", "-o", "{1}"]
-INPUTS = [
-    ["2 2\n1 3 2 4\n", "2 3\n3.2 3.7 4\n2.3 4 3.2\n", "1\n5\n1\n2\n1\n5\n2\n3\n", "5\n2 13 16 23 35\n16\n", "2 2\n2 5 10 15\n5\n"]
-]
+PROCESS = ["Lab 1", "Lab 2", "Lab 3"]
 
 UNIVERSITY = "NED University of Engineering and Technology"
 NAME = "Muhammad Raza"
@@ -99,10 +93,10 @@ python make_pdfs.py
 
 ## 🧠 Tips
 
-* Ensure your `.cpp` files compile cleanly and accept input via `cin`.
-* If a file doesn’t require input, set its entry in `INPUTS` to an empty string `""`.
+* Ensure your `.cpp` files compile cleanly and produce output without requiring stdin (hardcoded values are fine).
 * Customize fonts, colors, and layout by editing the paragraph and table styles in the script.
 * Use Git `.gitignore` to exclude `*.exe`, `*.pdf`, and `venv/` from commits.
+* Adjust the `EXECUTION_TIMEOUT` constant in the script if your programs take longer to run.
 
 ---
 
@@ -111,5 +105,6 @@ python make_pdfs.py
 This project is released under the [MIT License](LICENSE).
 
 Feel free to modify and adapt it for your institution or personal use.
+```
 
 ---
