@@ -2,12 +2,6 @@
 Generate lab reports as PDFs with code and outputs from C++ files.
 """
 
-#####################################
-#                                   #
-#       END OF CONFIGURATION        #
-#                                   #
-#####################################
-
 import subprocess
 from datetime import datetime
 from pathlib import Path
