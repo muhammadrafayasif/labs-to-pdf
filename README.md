@@ -1,92 +1,109 @@
 # 🧾 Automated Lab Report Generator (Python + ReportLab)
 
-This project automatically compiles, runs, and generates PDF lab reports for programming labs.
-It takes care of everything — from compiling files and running them with specific test inputs to formatting the results neatly into a professional, university-style PDF with your name, roll number, and department.
+This project automatically compiles, runs, and generates PDF lab reports for programming labs.  
+It handles everything — from compiling C++ files to capturing output and formatting it into a professional, university-style PDF with your name, roll number, and department.
 
-# 📸 Sample Output
+---
+
+## 📸 Sample Output
 
 The generated PDF includes:
+
 - University logo and title page
 - Each lab question’s source code
 - Automatically captured program output (styled like a terminal)
-- Inputs used for testing
+- Execution time for each task
 - Automatic date and metadata
 
-The PDF can be accessed [here](https://github.com/muhammadrafayasif/labs-to-pdf/blob/main/Lab%201/CT-24000.pdf)
+Example PDF: [CT-24000.pdf](https://github.com/razajavaid2004/labs-to-pdf/blob/main/Lab%201/CT-24000.pdf)
 
-# ⚙️ Features
+---
 
-- Automatic Compilation — Compiles all files in each lab folder using g++
-- Input Injection — Feeds predefined test input to each program
-- Output Capture — Captures console output automatically
-- Beautiful PDF Generation — Uses ReportLab for clean, formatted lab reports
-- Customizable Branding — Add your own logo, name, roll number, department, and degree
-- Supports Multiple Labs — Process multiple folders like "Lab 1", "Lab 2", etc. in one go
+## ⚙️ Features
 
-# 🗂️ Project Structure
+- ✅ Automatic Compilation — Uses `g++` to compile each `.cpp` file
+- 📤 Output Capture — Captures console output and formats it like a terminal
+- 🖋️ Beautiful PDF Generation — Uses ReportLab for clean, styled reports
+- 🧑‍🎓 Customizable Branding — Add your own logo, name, roll number, department, and degree
+- 📂 Multi-Lab Support — Process multiple folders like `"Lab 1"`, `"Lab 2"`, etc.
+- ⏱️ Execution Timing — Displays how long each program took to run
+- 🛠️ Error Handling — Gracefully reports compilation or runtime errors
+
+---
+
+## 🗂️ Project Structure
 
 ```bash
 📦 labs-to-pdf/
 │
 ├── Lab 1/
-│   ├── q1.cpp
-│   ├── q2.cpp
+│   ├── 1.cpp
+│   ├── 2.cpp
 │   └── ...
 │
 ├── logo.png                # University logo for the title page
-├── make_pdfs.py
+├── make_pdfs.py            # Main automation script
 └── README.md
 ```
 
-# 🧰 Requirements
+---
+
+## 🧰 Requirements
 
 You’ll need:
 
-- Python 3.8+
-- A compiler of your choice
-- ReportLab for PDF generation
+* Python 3.8+
+* A C++ compiler (e.g., `g++`)
+* ReportLab for PDF generation
 
 Install dependencies with:
+
 ```bash
 pip install reportlab
 ```
 
-# 🧑‍💻 Usage
+---
 
-- Place your .cpp files inside folders like Lab 1, Lab 2, etc.
+## 🧑‍💻 Usage
 
-- Update configuration at the top of the script:
-```py
+1. Place your `.cpp` files inside folders like `Lab 1`, `Lab 2`, etc.
+2. Update configuration at the top of `make_pdfs.py`:
+
+```python
 EXTENSION = "cpp"
-LOGO_PATH = "./logo.png" # University Logo to be added to the title page
-PROCESS = ["Lab 1"] # Add folder names (LABS) to be processed
-COMPILE_TEMPLATE = ["g++", "{0}", "-o", "{1}"] # Compilation code to run task
+LOGO_PATH = "./logo.png"
+PROCESS = ["Lab 1", "Lab 2", "Lab 3"]
 
-# FORMAT = [ [FIRST LAB INPUTS], [SECOND LAB INPUTS], ... ]
-INPUTS = [ 
-    ["2 2\n1 3 2 4\n", "2 3\n3.2 3.7 4\n2.3 4 3.2\n", "1\n5\n1\n2\n1\n5\n2\n3\n", "5\n2 13 16 23 35\n16\n", "2 2\n2 5 10 15\n5\n"] 
-] # User input for each lab task
-
-UNIVERSITY="NED University of Engineering and Technology"
-NAME = "NAME"
-ROLL_NO = "CT-24000"
+UNIVERSITY = "NED University of Engineering and Technology"
+NAME = "Muhammad Raza"
+ROLL_NO = "CT-24138"
 DEPARTMENT = "Department of Computer Science and Information Technology"
 DEGREE = "Bachelor of Science (BS)"
 ```
-- Run the generator
+
+3. Run the generator:
+
 ```bash
-python labs_to_pdf.py
+python make_pdfs.py
 ```
-- The PDFs will be generated inside each Lab folder individually
 
-# 🧠 Tips
+4. PDFs will be generated inside each lab folder individually.
 
-- Make sure your files compile cleanly without manual input prompts (use the provided test input).
-- If a file doesn’t require input, simply set its entry in INPUTS to an empty string "".
-- You can customize colors, fonts, and styles by modifying the paragraph and table styles in the script.
+---
 
-# 🪪 License
+## 🧠 Tips
 
-This project is released under the [MIT License](LICENSE)
+* Ensure your `.cpp` files compile cleanly and produce output without requiring stdin (hardcoded values are fine).
+* Customize fonts, colors, and layout by editing the paragraph and table styles in the script.
+* Use Git `.gitignore` to exclude `*.exe`, `*.pdf`, and `venv/` from commits.
+* Adjust the `EXECUTION_TIMEOUT` constant in the script if your programs take longer to run.
+
+---
+
+## 🪪 License
+
+This project is released under the [MIT License](LICENSE).
 
 Feel free to modify and adapt it for your institution or personal use.
+
+---

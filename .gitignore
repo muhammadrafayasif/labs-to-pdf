@@ -1,0 +1,17 @@
+# Ignore Python virtual environment
+venv/
+
+# Ignore compiled C++ binaries
+*.exe
+.vscode/
+
+# Ignore generated PDFs
+*.pdf
+
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
