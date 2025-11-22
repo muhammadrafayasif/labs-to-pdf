@@ -18,12 +18,12 @@ from reportlab.lib import colors
 # ---------- CONFIGURATION ----------
 EXTENSION = "cpp"
 LOGO_PATH = "./logo.png"
-PROCESS = ["Lab 1", "Lab 2", "Lab 3", "Lab 4", "Lab 5", "Lab 6", "Lab 7", "Lab 8", "Lab 9", "Lab 10", "Lab 11"]
+PROCESS = ["Lab 1"]
 EXECUTION_TIMEOUT = 5  # seconds
 
 UNIVERSITY = "NED University of Engineering and Technology"
-NAME = "Muhammad Raza"
-ROLL_NO = "CT-24138"
+NAME = "NAME"
+ROLL_NO = "CT-24000"
 DEPARTMENT = "Department of Computer Science and Information Technology"
 DEGREE = "Bachelor of Science (BS)"
 
