@@ -87,7 +87,7 @@ KEEP_EXE = False # Remove or keep the .exe file generated automatically
     ["2 2", "", "1 4"]
 """
 INPUTS = [
-    ["2 2\n1 3 2 4\n", "2 3\n3.2 3.7 4\n2.3 4 3.2\n", "1\n5\n1\n2\n1\n5\n2\n3\n", "5\n2 13 16 23 35\n16\n", "2 2\n2 5 10 15\n5\n"]
+    
 ]
 
 """ The QUESTIONS list follows the same format as the INPUT list provided above """
