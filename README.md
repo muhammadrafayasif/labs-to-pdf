@@ -15,7 +15,7 @@ The generated PDF includes:
 - Execution time for each task
 - Automatic date and metadata
 
-Example PDF: [CT-24000.pdf](https://github.com/razajavaid2004/labs-to-pdf/blob/main/Lab%201/CT-24000.pdf)
+Example PDF: [CT-24000.pdf](/Lab%201/CT-24000_Lab1.pdf)
 
 ---
 
@@ -66,13 +66,36 @@ pip install reportlab
 
 ## 🧑‍💻 Usage
 
-1. Place your `.cpp` files inside folders like `Lab 1`, `Lab 2`, etc.
+1. Place your files inside folders like `Lab 1`, `Lab 2`, etc.
 2. Update configuration at the top of `make_pdfs.py`:
 
 ```python
 EXTENSION = "cpp"
 LOGO_PATH = "./logo.png"
-PROCESS = ["Lab 1", "Lab 2", "Lab 3"]
+PROCESS = ["Lab 1"]
+KEEP_TOGETHER = True # Skip to next page if the question starts at the end of page
+KEEP_EXE = False # Remove or keep the .exe file generated automatically
+
+""" Enter the user inputs for each lab in the following order:  
+    INPUTS = [
+        [Q1 INPUTS, Q2 INPUTS, Q3 INPUTS, ...], # For Lab 1 (According to the first lab provided in the PROCESS list)
+        [Q1 INPUTS, Q2 INPUTS, Q3 INPUTS, ...], # For Lab 2 (According to the second lab provided in the PROCESS list)
+        ...
+    ]
+
+    For example, If Q2 does not take input, leave it as an empty string
+    ["2 2", "", "1 4"]
+"""
+INPUTS = [
+    ["2 2\n1 3 2 4\n", "2 3\n3.2 3.7 4\n2.3 4 3.2\n", "1\n5\n1\n2\n1\n5\n2\n3\n", "5\n2 13 16 23 35\n16\n", "2 2\n2 5 10 15\n5\n"]
+]
+
+""" The QUESTIONS list follows the same format as the INPUT list provided above """
+QUESTIONS = [
+    
+]
+
+EXECUTION_TIMEOUT = 5  # seconds
 
 UNIVERSITY = "NED University of Engineering and Technology"
 NAME = "NAME"
@@ -93,7 +116,8 @@ python make_pdfs.py
 
 ## 🧠 Tips
 
-* Ensure your `.cpp` files compile cleanly and produce output.
+* A custom font can be used, simply replace `font.ttf` with another font of your choice.
+* Ensure your files compile cleanly and produce output.
 * Customize fonts, colors, and layout by editing the paragraph and table styles in the script.
 * Adjust the `EXECUTION_TIMEOUT` constant in the script if your programs take longer to run.
 
