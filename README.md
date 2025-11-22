@@ -93,9 +93,8 @@ python make_pdfs.py
 
 ## 🧠 Tips
 
-* Ensure your `.cpp` files compile cleanly and produce output without requiring stdin (hardcoded values are fine).
+* Ensure your `.cpp` files compile cleanly and produce output.
 * Customize fonts, colors, and layout by editing the paragraph and table styles in the script.
-* Use Git `.gitignore` to exclude `*.exe`, `*.pdf`, and `venv/` from commits.
 * Adjust the `EXECUTION_TIMEOUT` constant in the script if your programs take longer to run.
 
 ---
