@@ -72,11 +72,11 @@ pip install reportlab
 ```python
 EXTENSION = "cpp"
 LOGO_PATH = "./logo.png"
-PROCESS = ["Lab 1", "Lab 2", "Lab 3"]
+PROCESS = ["Lab 1", "Lab 2, "Lab 3"]
 
 UNIVERSITY = "NED University of Engineering and Technology"
-NAME = "Muhammad Raza"
-ROLL_NO = "CT-24138"
+NAME = "NAME"
+ROLL_NO = "CT-24000"
 DEPARTMENT = "Department of Computer Science and Information Technology"
 DEGREE = "Bachelor of Science (BS)"
 ```
