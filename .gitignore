@@ -5,9 +5,6 @@ venv/
 *.exe
 .vscode/
 
-# Ignore generated PDFs
-*.pdf
-
 # Ignore Python bytecode
 __pycache__/
 *.pyc
