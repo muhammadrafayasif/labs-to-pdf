@@ -72,7 +72,7 @@ pip install reportlab
 ```python
 EXTENSION = "cpp"
 LOGO_PATH = "./logo.png"
-PROCESS = ["Lab 1"]
+PROCESS = ["Lab 1"] # Folder names, must match exactly
 KEEP_TOGETHER = True # Skip to next page if the question starts at the end of page
 KEEP_EXE = False # Remove or keep the .exe file generated automatically
 
