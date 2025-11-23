@@ -21,7 +21,7 @@ from reportlab.lib import colors
 EXTENSION = "cpp"
 LOGO_PATH = "./logo.png"
 PROCESS = ["Lab 1"] # Folder names, must match exactly
-KEEP_TOGETHER = True # Skip to next page if the question starts at the end of page
+KEEP_TOGETHER = False # Skip to next page if the question starts at the end of page
 KEEP_EXE = False # Remove or keep the .exe file generated automatically
 
 """ Enter the user inputs for each lab in the following order:  
@@ -40,7 +40,7 @@ INPUTS = [
 
 """ The QUESTIONS list follows the same format as the INPUT list provided above """
 QUESTIONS = [
-    
+  
 ]
 
 EXECUTION_TIMEOUT = 5  # seconds
@@ -67,7 +67,7 @@ code_style = ParagraphStyle("CodeStyle", fontName="Courier", fontSize=9, leading
 terminal_style = ParagraphStyle("TerminalStyle", fontName="Courier", fontSize=9, leading=12,
                                 backColor=colors.black, textColor=colors.white,
                                 borderPadding=5, borderColor=colors.lightgrey, borderWidth=0.5)
-question_style = ParagraphStyle("Question", parent=styles["Normal"])
+question_style = ParagraphStyle("Question", parent=styles["Heading5"], alignment=1)
 
 # ---------- HELPERS ----------
 def terminal_block(text: str, input: str = "") -> Table:
@@ -144,29 +144,41 @@ def build_title_page(lab_name: str):
 
 def build_question_block(lab_index: int, n: int, src_path: Path, keep_together: bool = True) -> list:
     """Build a block containing question code and its output/error."""
-    lab = [Paragraph(f"Question {n+1}", title_style)]
+    question = [Paragraph(f"Question {n+1}", title_style)]
     
     # Safely get the question text
     question_text = QUESTIONS[lab_index][n] if lab_index < len(QUESTIONS) and n < len(QUESTIONS[lab_index]) else None
     
     # Only add if the question exists and is not empty
     if question_text:
-        lab.append(Paragraph(question_text, question_style))
-        lab.append(Spacer(1, 0.2 * inch))
+        question.append(Paragraph(question_text, question_style))
+        question.append(Spacer(1, 0.2 * inch))
     
+    src_code = list()
     with open(src_path, 'r', encoding="utf-8") as f:
-        lab.append(Preformatted(f.read(), code_style))
+        src_code.append(Preformatted(f.read(), code_style))
 
+    # Safely get the input
     input = INPUTS[lab_index][n] if lab_index < len(INPUTS) and n < len(INPUTS[lab_index]) else None
     output, error = compile_and_run(src_path, input=input, keep_exe=KEEP_EXE)
+    
+    lab_outp = list()
     if output:
-        lab.append(Paragraph("Output", title_style))
-        lab.append(terminal_block(output, input))
+        lab_outp.append(Paragraph("Output", title_style))
+        lab_outp.append(terminal_block(output, input))
     else:
-        lab.append(Paragraph("Error", title_style))
-        lab.append(terminal_block(error))
+        lab_outp.append(Paragraph("Error", title_style))
+        lab_outp.append(terminal_block(error))
+    lab_outp.append(Spacer(1, 0.3 * inch))
 
-    return [KeepTogether(lab)] if keep_together else lab
+    # This will separate questions into different pages if KEEP_TOGETHER is set to True
+    block = list()
+    if not keep_together:
+        block = [KeepTogether(question)] + src_code
+    else:
+        block = [KeepTogether(question + src_code)]
+
+    return block + [KeepTogether(lab_outp)]
 
 # ---------- MAIN ----------
 for lab_index, lab_name in enumerate(PROCESS):
