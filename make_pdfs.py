@@ -1,7 +1,8 @@
 """
-Generate lab reports as PDFs with code and outputs from C++ files.
+Generate lab reports as PDFs with code and outputs from source files.
 """
 
+import re
 import subprocess, os
 from datetime import datetime
 from pathlib import Path
@@ -18,11 +19,21 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 
 # ---------- CONFIGURATION ----------
-EXTENSION = "cpp"
+EXTENSION = "py"
+# Set COMPILED to False when using interpreted languages like Python
+COMPILED = False
+
 LOGO_PATH = "./logo.png"
-PROCESS = ["Lab 1"] # Folder names, must match exactly
+
+# The complete command for program compilation/interpretation
+# Keep in mind that src_path and output_path are constants the program will replace 
+# For python, replace with ["python", "output_path"]
+# For C++, replace with ["gcc", "src_path", "-o", "output_path"]
+COMPILE_CMD = ["python", "output_path"]
+
+PROCESS = ["Lab 2"] # Folder names, must match exactly
 KEEP_TOGETHER = False # Skip to next page if the question starts at the end of page
-KEEP_EXE = False # Remove or keep the .exe file generated automatically
+KEEP_EXE = False # Remove or keep the .exe file generated automatically (On COMPILED = True only)
 
 """ Enter the user inputs for each lab in the following order:  
     INPUTS = [
@@ -50,6 +61,7 @@ NAME = "NAME"
 ROLL_NO = "CT-24000"
 DEPARTMENT = "Department of Computer Science and Information Technology"
 DEGREE = "Bachelor of Science (BS)"
+COURSE = "Programming for AI (PAI)"
 
 # ---------- STYLES ----------
 pdfmetrics.registerFont(TTFont("CustomFont", "font.ttf"))
@@ -85,9 +97,15 @@ def terminal_block(text: str, input: str = "") -> Table:
 
 
 def compile_and_run(src_path: Path, input: str = "", keep_exe: bool = False, debug: bool = False) -> str | None:
-    """Compile and run a C++ file, returning output or error with robust handling."""
-    output_path = src_path.with_suffix("")  # compiled executable path
-    compile_cmd = ["g++", str(src_path), "-o", str(output_path)]
+    """Compile and run a file, returning output or error with robust handling."""
+    if COMPILED: output_path = src_path.with_suffix("")  # compiled executable path
+    else: output_path = src_path
+    compile_cmd = COMPILE_CMD
+    for n, i in enumerate(compile_cmd):
+        if i == "src_path":
+            compile_cmd[n] = str(src_path)
+        elif i == "output_path":
+            compile_cmd[n] = str(output_path)
 
     # Debug info
     if debug:
@@ -96,42 +114,46 @@ def compile_and_run(src_path: Path, input: str = "", keep_exe: bool = False, deb
 
     try:
         start_time = datetime.now()
-        # Compile the source file
-        subprocess.run(compile_cmd, check=True)
 
+        # Compile the source file
+        result = subprocess.run(compile_cmd, capture_output=True, input=input, text=True, timeout=60, check=True)
+        
         # Run the compiled program with a generous timeout
-        result = subprocess.run(
-            [str(output_path)],
-            capture_output=True,
-            input=input,
-            text=True,
-            timeout=60  # best practice: allow up to 60s for long-running programs
-        )
+        if COMPILED:
+            result = subprocess.run(
+                [str(output_path)],
+                capture_output=True,
+                input=input,
+                text=True,
+                timeout=60  # best practice: allow up to 60s for long-running programs
+            )
         end_time = datetime.now()
 
         # Remove generated .exe file if permitted
-        if not keep_exe:
+        if COMPILED and not keep_exe:
             os.remove(output_path.with_suffix(".exe"))
 
         # Collect both stdout and stderr
-        output = (result.stdout + result.stderr).replace(": ", ":\n").strip()
-        output += f"\n[Execution Time: {(end_time - start_time).total_seconds():.2f}s]"
+        raw_output = (result.stdout + result.stderr).replace(": ", ":\n").strip()
+        output = raw_output + f"\n[Execution Time: {(end_time - start_time).total_seconds():.2f}s]"
 
-        return output, None
+        return output if raw_output else None, None
 
     except subprocess.TimeoutExpired:
         return None, "⏱️ Execution timed out (program may be waiting for input or running too long)."
     except subprocess.CalledProcessError as e:
         return None, f"❌ Compilation or execution failed:\n{e.stderr or str(e)}"
+    except:
+        raise ValueError("COMPILE_CMD must not configured properly or the command is not set up on your system")
 
-def build_title_page(lab_name: str):
+def build_title_page(lab_name: str, course: str):
     """Build the title page for a lab report."""
     return [
         Spacer(1, 2 * inch),
         Image(LOGO_PATH, width=2.5 * inch, height=2.5 * inch),
         Spacer(1, 0.5 * inch),
         Paragraph(UNIVERSITY, title_style),
-        Paragraph(f"Data Structures and Algorithms — {lab_name}", subtitle_style),
+        Paragraph(f"{course} — {lab_name}", subtitle_style),
         Spacer(1, 0.5 * inch),
         Paragraph(f"Author: {NAME}", info_style),
         Paragraph(f"Roll No: {ROLL_NO}", info_style),
@@ -140,7 +162,6 @@ def build_title_page(lab_name: str):
         Paragraph(f"{DEPARTMENT}<br/>{DEGREE}", footer_style),
         PageBreak()
     ]
-
 
 def build_question_block(lab_index: int, n: int, src_path: Path, keep_together: bool = True) -> list:
     """Build a block containing question code and its output/error."""
@@ -166,6 +187,8 @@ def build_question_block(lab_index: int, n: int, src_path: Path, keep_together: 
     if output:
         lab_outp.append(Paragraph("Output", title_style))
         lab_outp.append(terminal_block(output, input))
+    elif output is None:
+        pass
     else:
         lab_outp.append(Paragraph("Error", title_style))
         lab_outp.append(terminal_block(error))
@@ -186,9 +209,15 @@ for lab_index, lab_name in enumerate(PROCESS):
     lab_path.mkdir(parents=True, exist_ok=True)
     pdf_path = lab_path / f"{ROLL_NO}_{lab_name.replace(" ","")}.pdf"
     doc = SimpleDocTemplate(str(pdf_path), pagesize=A4)
-    content = build_title_page(lab_name)
+    content = build_title_page(lab_name, COURSE)
 
-    files = sorted(lab_path.glob(f"*.{EXTENSION}"))
+    files = sorted(
+        lab_path.glob(f"*.{EXTENSION}"), 
+        key=lambda p: [
+            int(x) if x.isdigit() else x.lower()
+            for x in re.split(r"(\d+)", p.stem)
+        ]
+    )
     for q_index, src_path in enumerate(files):
         content.extend(build_question_block(lab_index, q_index, src_path, KEEP_TOGETHER))
 

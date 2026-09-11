@@ -53,7 +53,6 @@ Example PDF: [CT-24000.pdf](/Lab%201/CT-24000_Lab1.pdf)
 You’ll need:
 
 * Python 3.8+
-* A C++ compiler (e.g., `g++`)
 * ReportLab for PDF generation
 
 Install dependencies with:
@@ -70,11 +69,20 @@ pip install reportlab
 2. Update configuration at the top of `make_pdfs.py`:
 
 ```python
-EXTENSION = "cpp"
+EXTENSION = "py"
+# Set COMPILED to False when using interpreted languages like Python
+COMPILED = False
+
 LOGO_PATH = "./logo.png"
-PROCESS = ["Lab 1"] # Folder names, must match exactly
-KEEP_TOGETHER = True # Skip to next page if the question starts at the end of page
-KEEP_EXE = False # Remove or keep the .exe file generated automatically
+
+# The complete command for program compilation/interpretation
+# Keep in mind that src_path and output_path are constants the program will replace 
+# For python, replace with ["python", "output_path"]
+COMPILE_CMD = ["python", "output_path"]
+
+PROCESS = ["Lab 2"] # Folder names, must match exactly
+KEEP_TOGETHER = False # Skip to next page if the question starts at the end of page
+KEEP_EXE = False # Remove or keep the .exe file generated automatically (On COMPILED = True only)
 
 """ Enter the user inputs for each lab in the following order:  
     INPUTS = [
@@ -92,7 +100,7 @@ INPUTS = [
 
 """ The QUESTIONS list follows the same format as the INPUT list provided above """
 QUESTIONS = [
-    
+  
 ]
 
 EXECUTION_TIMEOUT = 5  # seconds
@@ -102,6 +110,7 @@ NAME = "NAME"
 ROLL_NO = "CT-24000"
 DEPARTMENT = "Department of Computer Science and Information Technology"
 DEGREE = "Bachelor of Science (BS)"
+COURSE = "Programming for AI (PAI)"
 ```
 
 3. Run the generator:
