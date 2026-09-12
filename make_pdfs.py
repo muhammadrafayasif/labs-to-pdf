@@ -18,8 +18,19 @@ from reportlab.lib.units import inch
 from reportlab.lib import colors
 
 # ---------- CONFIGURATION ----------
+# The file extension for the lab source codes i.e (py, cpp, c, etc..)
 EXTENSION = "cpp"
+# Set COMPILED to False when using interpreted languages like Python
+COMPILED = True
+
 LOGO_PATH = "./logo.png"
+
+# The complete command for program compilation/interpretation
+# Keep in mind that src_path and output_path are constants the program will replace 
+# For python, replace with ["python", "output_path"]
+# For C++, replace with ["g++", "src_path", "-o", "output_path"]
+COMPILE_CMD = ["g++", "src_path", "-o", "output_path"]
+
 PROCESS = ["Lab 1"] # Folder names, must match exactly
 KEEP_TOGETHER = False # Skip to next page if the question starts at the end of page
 KEEP_EXE = False # Remove or keep the .exe file generated automatically
@@ -85,9 +96,15 @@ def terminal_block(text: str, input: str = "") -> Table:
 
 
 def compile_and_run(src_path: Path, input: str = "", keep_exe: bool = False, debug: bool = False) -> str | None:
-    """Compile and run a C++ file, returning output or error with robust handling."""
-    output_path = src_path.with_suffix("")  # compiled executable path
-    compile_cmd = ["g++", str(src_path), "-o", str(output_path)]
+    """Compile and run a file, returning output or error with robust handling."""
+    if COMPILED: output_path = src_path.with_suffix("")  # compiled executable path
+    else: output_path = src_path
+    compile_cmd = [
+        str(src_path) if arg == "src_path"
+        else str(output_path) if arg == "output_path"
+        else arg
+        for arg in COMPILE_CMD
+    ]
 
     # Debug info
     if debug:

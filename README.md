@@ -70,11 +70,22 @@ pip install reportlab
 2. Update configuration at the top of `make_pdfs.py`:
 
 ```python
+# The file extension for the lab source codes i.e (py, cpp, c, etc..)
 EXTENSION = "cpp"
+# Set COMPILED to False when using interpreted languages like Python
+COMPILED = True
+
 LOGO_PATH = "./logo.png"
+
+# The complete command for program compilation/interpretation
+# Keep in mind that src_path and output_path are constants the program will replace 
+# For python, replace with ["python", "output_path"]
+# For C++, replace with ["g++", "src_path", "-o", "output_path"]
+COMPILE_CMD = ["g++", "src_path", "-o", "output_path"]
+
 PROCESS = ["Lab 1"] # Folder names, must match exactly
-KEEP_TOGETHER = True # Skip to next page if the question starts at the end of page
-KEEP_EXE = False # Remove or keep the .exe file generated automatically
+KEEP_TOGETHER = False # Skip to next page if the question starts at the end of page
+KEEP_EXE = False # Remove or keep the .exe file generated automatically (On COMPILED = True only)
 
 """ Enter the user inputs for each lab in the following order:  
     INPUTS = [
